@@ -136,8 +136,7 @@ def main():
     messages = build_messages(title, detail_url, body_text, imgs)
 
     # 첫 실행은 과거 공지로 도배 방지: 전송 없이 last_id만 저장
-    if state["last_id"] is not None:
-        post_to_discord(messages)
+    post_to_discord(messages)
 
     state["last_id"] = post_id
     save_state(state)
