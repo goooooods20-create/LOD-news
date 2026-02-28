@@ -1,3 +1,4 @@
+print("WEBHOOK:", WEBHOOK)
 import os, re, json, textwrap
 import requests
 from bs4 import BeautifulSoup
