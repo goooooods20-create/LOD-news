@@ -89,10 +89,16 @@ def extract_main_text_and_images(detail_url: str):
     return title, body_text, imgs
 
 def post_to_discord(messages):
-    # 디스코드 content 2000자 제한 때문에 쪼갬 :contentReference[oaicite:7]{index=7}
     for msg in messages:
+        msg = (msg or "").strip()
+        if not msg:
+            continue  # 빈 메시지 전송 금지(400 방지)
+        if len(msg) > 1990:
+            msg = msg[:1990]  # 혹시라도 길이 초과 방지
         r = requests.post(WEBHOOK, json={"content": msg}, timeout=20)
-        r.raise_for_status()
+        # 디버깅용: 실패하면 응답 본문까지 로그로 찍기
+        if r.status_code >= 400:
+            raise RuntimeError(f"Discord error {r.status_code}: {r.text}")
 
 def chunk_text(text: str, chunk_size: int = 1800):
     # 줄바꿈이 없거나 한 줄이 너무 길어도 무조건 글자수로 잘라서 2000자 제한을 피함
