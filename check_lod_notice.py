@@ -95,18 +95,17 @@ def post_to_discord(messages):
         r.raise_for_status()
 
 def chunk_text(text: str, chunk_size: int = 1800):
-    # 안전하게 2000 아래로(여유분 포함)
+    # 줄바꿈이 없거나 한 줄이 너무 길어도 무조건 글자수로 잘라서 2000자 제한을 피함
+    text = (text or "").strip()
+    if not text:
+        return []
+
     chunks = []
-    buf = ""
-    for line in text.splitlines():
-        if len(buf) + len(line) + 1 > chunk_size:
-            if buf.strip():
-                chunks.append(buf.strip())
-            buf = line + "\n"
-        else:
-            buf += line + "\n"
-    if buf.strip():
-        chunks.append(buf.strip())
+    i = 0
+    n = len(text)
+    while i < n:
+        chunks.append(text[i:i+chunk_size])
+        i += chunk_size
     return chunks
 
 def build_messages(title, detail_url, body_text, imgs):
